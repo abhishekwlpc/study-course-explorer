@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "name": "Java Mastery",
+    "category": "Programming",
+    "level": "Intermediate",
+    "duration": 18,
+    "rating": 4.8,
+    "students": 1240
+  },
+  {
+    "id": 2,
+    "name": "React Fundamentals",
+    "category": "Web Development",
+    "level": "Beginner",
+    "duration": 12,
+    "rating": 4.7,
+    "students": 980
+  },
+  {
+    "id": 3,
+    "name": "Spring Boot APIs",
+    "category": "Backend",
+    "level": "Intermediate",
+    "duration": 15,
+    "rating": 4.9,
+    "students": 860
+  },
+  {
+    "id": 4,
+    "name": "AWS Solutions Architect",
+    "category": "Cloud",
+    "level": "Advanced",
+    "duration": 22,
+    "rating": 4.9,
+    "students": 1540
+  },
+  {
+    "id": 5,
+    "name": "Python for AI",
+    "category": "AI & Machine Learning",
+    "level": "Beginner",
+    "duration": 14,
+    "rating": 4.6,
+    "students": 1320
+  },
+  {
+    "id": 6,
+    "name": "JavaScript Deep Dive",
+    "category": "Programming",
+    "level": "Intermediate",
+    "duration": 16,
+    "rating": 4.8,
+    "students": 1100
+  },
+  {
+    "id": 7,
+    "name": "SQL & Database Design",
+    "category": "Database",
+    "level": "Intermediate",
+    "duration": 10,
+    "rating": 4.5,
+    "students": 740
+  },
+  {
+    "id": 8,
+    "name": "UI/UX for Developers",
+    "category": "Design",
+    "level": "Beginner",
+    "duration": 8,
+    "rating": 4.4,
+    "students": 620
+  }
+]
