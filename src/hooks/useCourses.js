@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import apiClient from "../api/apiClient";
 
 export default function useCourses() {
   const [courses, setCourses] = useState([]);
@@ -9,7 +9,7 @@ export default function useCourses() {
   useEffect(() => {
     const loadCourses = async () => {
       try {
-        const response = await axios.get("/study_courses.json");
+        const response = await apiClient.get("/study_courses.json");
 
         setCourses(response.data);
       } catch (error) {

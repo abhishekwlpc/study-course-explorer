@@ -236,11 +236,13 @@ function App() {
 
   function handleLogin() {
     localStorage.setItem("demoAuthenticated", "true");
+    localStorage.setItem("accessToken", "demo-token-123");
     setIsAuthenticated(true);
   }
 
   function handleLogout() {
     localStorage.removeItem("demoAuthenticated");
+    localStorage.removeItem("accessToken");
     setIsAuthenticated(false);
   }
 
