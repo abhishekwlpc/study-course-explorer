@@ -1,6 +1,7 @@
 .course-card {
-    width: calc(100% - 62px);
+    width: calc(100% - 64px);
     box-sizing: border-box;
+    max-width: 400px;
     margin: auto;
     margin-bottom: 20px;
     padding: 20px;
@@ -8,7 +9,7 @@
     border-radius: 16px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
     background-color: rgb(238, 229, 229);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .course-card:hover {

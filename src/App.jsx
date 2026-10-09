@@ -1,35 +1,25 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import CourseCard from "./CourseCard";
+import useCourses from "./hooks/useCourses";
+import { Link, Routes, Route } from "react-router-dom";
+import LoginPage from "./LoginPage";
+import ProtectedRoute from "./ProtectedRoute";
 import "./App.css";
+import LogoutPage from "./LogoutPage";
 
-function App() {
-  const [courses, setCourses] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+function CoursesPage() {
+  const [courses, setCourses, loading, error] = useCourses();
   const [searchedText, setSearchedText] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("");
   const [rating, setRating] = useState(0.0);
-
-  useEffect(() => {
-    const loadCourses = async () => {
-      try {
-        const response = await fetch("/study_courses.json");
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch data!");
-        }
-
-        const data = await response.json();
-        setCourses(data);
-      } catch (error) {
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadCourses();
-  }, []);
+  const [newCourse, setNewCourse] = useState({
+    name: "",
+    category: "",
+    level: "Beginner",
+    duration: "",
+    rating: "",
+    students: "",
+  });
 
   function setTextToSearch(e) {
     setSearchedText(e.target.value);
@@ -52,6 +42,45 @@ function App() {
     setSearchedText("");
     setSelectedLevel("");
     setRating(0.0);
+  }
+
+  function createNewCourse(e) {
+    const { name, value } = e.target;
+
+    setNewCourse((perviousCourse) => ({
+      ...perviousCourse,
+      [name]: value,
+    }));
+  }
+
+  function handleAddCourse(e) {
+    e.preventDefault();
+
+    if (!newCourse.name.trim() || !newCourse.category.trim()) {
+      alert("Course name and category required!");
+      return;
+    }
+
+    const courseToAdd = {
+      id: Date.now(),
+      name: newCourse.name.trim(),
+      category: newCourse.category.trim(),
+      level: newCourse.level,
+      duration: Number(newCourse.duration),
+      rating: Number(newCourse.rating),
+      students: Number(newCourse.students),
+    };
+
+    setCourses((perviousCourse) => [...perviousCourse, courseToAdd]);
+
+    setNewCourse({
+      name: "",
+      category: "",
+      level: "Beginner",
+      duration: "",
+      rating: "",
+      students: "",
+    });
   }
 
   return (
@@ -117,6 +146,66 @@ function App() {
         <button onClick={clearFilters}>Clear Filter</button>
       </div>
       <div>
+        <form onSubmit={handleAddCourse}>
+          <label>Course Name: </label>
+          <input
+            type="text"
+            name="name"
+            value={newCourse.name}
+            onChange={createNewCourse}
+          />
+          <br />
+          <label>Course Category: </label>
+          <input
+            type="text"
+            name="category"
+            value={newCourse.category}
+            onChange={createNewCourse}
+          />
+          <br />
+          <label>Level: </label>
+          <select
+            value={newCourse.level}
+            name="level"
+            onChange={createNewCourse}
+          >
+            <option>Beginner</option>
+            <option>Intermediate</option>
+            <option>Advanced</option>
+          </select>
+          <br />
+          <label>Duration: </label>
+          <input
+            type="number"
+            name="duration"
+            value={newCourse.duration}
+            onChange={createNewCourse}
+          />
+          <br />
+          <label>Rating: </label>
+          <input
+            type="number"
+            name="rating"
+            value={newCourse.rating}
+            min={0.0}
+            max={5.0}
+            onChange={createNewCourse}
+            required
+          />
+          <br />
+          <label>Student Count: </label>
+          <input
+            type="number"
+            name="students"
+            value={newCourse.students}
+            min={0}
+            onChange={createNewCourse}
+          />
+          <br />
+          <button type="submit">Add Course</button>
+        </form>
+      </div>
+      <div>
         {loading ? (
           <h3>Loading</h3>
         ) : error ? (
@@ -136,6 +225,53 @@ function App() {
           </>
         )}
       </div>
+    </>
+  );
+}
+
+function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  return (
+    <>
+      <nav>
+        <Link to="/login">Login</Link>
+        {" | "}
+        <Link to="/">Home</Link>
+        {" | "}
+        <Link to="/courses">Courses</Link>
+        {" | "}
+        <Link to="/about">About</Link>
+        {" | "}
+        <Link to="/logout">Logout</Link>
+      </nav>
+
+      <Routes>
+        <Route path="/" element={<h1>Welcome to Study Course Explorer!</h1>} />
+
+        <Route
+          path="/courses"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <CoursesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/about" element={<h1>About our project</h1>} />
+        <Route
+          path="/logout"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <LogoutPage onLogout={() => setIsAuthenticated(false)} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/login"
+          element={<LoginPage onLogin={() => setIsAuthenticated(true)} />}
+        />
+        <Route path="*" element={<h1>404 - Page not found</h1>} />
+      </Routes>
     </>
   );
 }
