@@ -230,7 +230,19 @@ function CoursesPage() {
 }
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    () => localStorage.getItem("demoAuthenticated") === "true",
+  );
+
+  function handleLogin() {
+    localStorage.setItem("demoAuthenticated", "true");
+    setIsAuthenticated(true);
+  }
+
+  function handleLogout() {
+    localStorage.removeItem("demoAuthenticated");
+    setIsAuthenticated(false);
+  }
 
   return (
     <>
@@ -262,14 +274,11 @@ function App() {
           path="/logout"
           element={
             <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <LogoutPage onLogout={() => setIsAuthenticated(false)} />
+              <LogoutPage onLogout={handleLogout} />
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/login"
-          element={<LoginPage onLogin={() => setIsAuthenticated(true)} />}
-        />
+        <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
         <Route path="*" element={<h1>404 - Page not found</h1>} />
       </Routes>
     </>
