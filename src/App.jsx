@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import CourseCard from "./CourseCard";
 import useCourses from "./hooks/useCourses";
 import { Link, Routes, Route } from "react-router-dom";
@@ -6,8 +6,9 @@ import LoginPage from "./LoginPage";
 import ProtectedRoute from "./ProtectedRoute";
 import "./App.css";
 import LogoutPage from "./LogoutPage";
+import ErrorBoundary from "./ErrorBoundary";
 
-function CoursesPage() {
+function CoursesPage({ role }) {
   const [courses, setCourses, loading, error] = useCourses();
   const [searchedText, setSearchedText] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("");
@@ -26,13 +27,17 @@ function CoursesPage() {
   }
 
   const lowercaseSearchedText = searchedText.toLocaleLowerCase();
-  const filteredCourses = courses.filter(
-    (course) =>
-      (course.name.toLocaleLowerCase().includes(lowercaseSearchedText) ||
-        course.category.toLocaleLowerCase().includes(lowercaseSearchedText)) &&
-      course.level.includes(selectedLevel) &&
-      course.rating >= rating,
-  );
+  const filteredCourses = useMemo(() => {
+    return courses.filter(
+      (course) =>
+        (course.name.toLocaleLowerCase().includes(lowercaseSearchedText) ||
+          course.category
+            .toLocaleLowerCase()
+            .includes(lowercaseSearchedText)) &&
+        course.level.includes(selectedLevel) &&
+        course.rating >= rating,
+    );
+  }, [courses, lowercaseSearchedText, selectedLevel, rating]);
 
   function filterRating(e) {
     setRating(Number(e.target.value));
@@ -145,66 +150,68 @@ function CoursesPage() {
       <div>
         <button onClick={clearFilters}>Clear Filter</button>
       </div>
-      <div>
-        <form onSubmit={handleAddCourse}>
-          <label>Course Name: </label>
-          <input
-            type="text"
-            name="name"
-            value={newCourse.name}
-            onChange={createNewCourse}
-          />
-          <br />
-          <label>Course Category: </label>
-          <input
-            type="text"
-            name="category"
-            value={newCourse.category}
-            onChange={createNewCourse}
-          />
-          <br />
-          <label>Level: </label>
-          <select
-            value={newCourse.level}
-            name="level"
-            onChange={createNewCourse}
-          >
-            <option>Beginner</option>
-            <option>Intermediate</option>
-            <option>Advanced</option>
-          </select>
-          <br />
-          <label>Duration: </label>
-          <input
-            type="number"
-            name="duration"
-            value={newCourse.duration}
-            onChange={createNewCourse}
-          />
-          <br />
-          <label>Rating: </label>
-          <input
-            type="number"
-            name="rating"
-            value={newCourse.rating}
-            min={0.0}
-            max={5.0}
-            onChange={createNewCourse}
-            required
-          />
-          <br />
-          <label>Student Count: </label>
-          <input
-            type="number"
-            name="students"
-            value={newCourse.students}
-            min={0}
-            onChange={createNewCourse}
-          />
-          <br />
-          <button type="submit">Add Course</button>
-        </form>
-      </div>
+      {role === "ADMIN" ? (
+        <div>
+          <form onSubmit={handleAddCourse}>
+            <label>Course Name: </label>
+            <input
+              type="text"
+              name="name"
+              value={newCourse.name}
+              onChange={createNewCourse}
+            />
+            <br />
+            <label>Course Category: </label>
+            <input
+              type="text"
+              name="category"
+              value={newCourse.category}
+              onChange={createNewCourse}
+            />
+            <br />
+            <label>Level: </label>
+            <select
+              value={newCourse.level}
+              name="level"
+              onChange={createNewCourse}
+            >
+              <option>Beginner</option>
+              <option>Intermediate</option>
+              <option>Advanced</option>
+            </select>
+            <br />
+            <label>Duration: </label>
+            <input
+              type="number"
+              name="duration"
+              value={newCourse.duration}
+              onChange={createNewCourse}
+            />
+            <br />
+            <label>Rating: </label>
+            <input
+              type="number"
+              name="rating"
+              value={newCourse.rating}
+              min={0.0}
+              max={5.0}
+              onChange={createNewCourse}
+              required
+            />
+            <br />
+            <label>Student Count: </label>
+            <input
+              type="number"
+              name="students"
+              value={newCourse.students}
+              min={0}
+              onChange={createNewCourse}
+            />
+            <br />
+            <button type="submit">Add Course</button>
+          </form>
+        </div>
+      ) : null}
       <div>
         {loading ? (
           <h3>Loading</h3>
@@ -233,6 +240,7 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
     () => localStorage.getItem("demoAuthenticated") === "true",
   );
+  const [role, setRole] = useState("USER");
 
   function handleLogin() {
     localStorage.setItem("demoAuthenticated", "true");
@@ -244,6 +252,10 @@ function App() {
     localStorage.removeItem("demoAuthenticated");
     localStorage.removeItem("accessToken");
     setIsAuthenticated(false);
+  }
+
+  function changeRole() {
+    setRole((currentRole) => (currentRole === "USER" ? "ADMIN" : "USER"));
   }
 
   return (
@@ -267,7 +279,12 @@ function App() {
           path="/courses"
           element={
             <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <CoursesPage />
+              <button onClick={changeRole}>
+                Change Role: Current Role: {role}
+              </button>
+              <ErrorBoundary>
+                <CoursesPage role={role} />
+              </ErrorBoundary>
             </ProtectedRoute>
           }
         />

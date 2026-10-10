@@ -1,4 +1,5 @@
 import "./CourseCard.css";
+import { memo } from "react";
 
 function CourseCard({ course }) {
   return (
@@ -13,4 +14,4 @@ function CourseCard({ course }) {
   );
 }
 
-export default CourseCard;
+export default memo(CourseCard);

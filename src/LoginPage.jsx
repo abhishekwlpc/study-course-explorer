@@ -32,20 +32,24 @@ function LoginPage({ onLogin }) {
     <>
       <div>
         <form onSubmit={submitCredintails}>
-          <label>Email: </label>
+          <label htmlFor="email">Email: </label>
           <input
+            id="email"
             type="email"
             name="email"
             value={email}
             onChange={setLoginCreedintials}
+            required
           />
           <br />
-          <label>Password: </label>
+          <label htmlFor="password">Password: </label>
           <input
+            id="password"
             type="password"
             name="password"
             value={password}
             onChange={setLoginCreedintials}
+            required
           />
           <button type="submit">Login</button>
         </form>
