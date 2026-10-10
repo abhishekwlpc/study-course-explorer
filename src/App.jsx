@@ -7,6 +7,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import "./App.css";
 import LogoutPage from "./LogoutPage";
 import ErrorBoundary from "./ErrorBoundary";
+import CallbackDemo from "./test/CallbackDemo";
 
 function CoursesPage({ role }) {
   const [courses, setCourses, loading, error] = useCourses();
@@ -284,6 +285,7 @@ function App() {
               </button>
               <ErrorBoundary>
                 <CoursesPage role={role} />
+                <CallbackDemo />
               </ErrorBoundary>
             </ProtectedRoute>
           }
